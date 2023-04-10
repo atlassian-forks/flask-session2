@@ -606,6 +606,7 @@ class SqlAlchemySessionInterface(SessionInterface):
         use_signer=False,
         permanent=True,
         sequence=None,
+        create_table=False,
         autodelete=False,
     ):
         if db is None:
@@ -616,8 +617,9 @@ class SqlAlchemySessionInterface(SessionInterface):
         self.key_prefix = key_prefix
         self.use_signer = use_signer
         self.permanent = permanent
-        self.autodelete = autodelete
         self.sequence = sequence
+        self.create_table = create_table
+        self.autodelete = autodelete
         self.has_same_site_capability = hasattr(self, "get_cookie_samesite")
 
         class Session(self.db.Model):
@@ -644,11 +646,12 @@ class SqlAlchemySessionInterface(SessionInterface):
             def __repr__(self):
                 return f"<Session data {self.data}>"
 
-        from sqlalchemy import inspect
+        if create_table:
+            from sqlalchemy import inspect
 
-        with app.app_context():
-            if not inspect(db.engine).has_table(table):
-                self.db.create_all()
+            with app.app_context():
+                if not inspect(db.engine).has_table(table):
+                    self.db.create_all()
 
         self.sql_session_model = Session
 

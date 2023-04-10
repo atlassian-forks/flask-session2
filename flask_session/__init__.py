@@ -97,6 +97,7 @@ class Session:
         config.setdefault("SESSION_ELASTICSEARCH_HOST", "http://localhost:9200")
         config.setdefault("SESSION_ELASTICSEARCH_INDEX", "sessions")
         config.setdefault("SESSION_SQLALCHEMY", None)
+        config.setdefault("SESSION_SQLALCHEMY_CREATE_TABLE", False)
         config.setdefault("SESSION_SQLALCHEMY_TABLE", "sessions")
         config.setdefault("SESSION_SQLALCHEMY_SEQUENCE", None)
         config.setdefault("GCLOUD_APP_PROJECT_ID", "unknown")
@@ -153,6 +154,7 @@ class Session:
                 config["SESSION_USE_SIGNER"],
                 config["SESSION_PERMANENT"],
                 config["SESSION_SQLALCHEMY_SEQUENCE"],
+                config["SESSION_SQLALCHEMY_CREATE_TABLE"],
                 config["SESSION_AUTODELETE"],
             )
         elif config["SESSION_TYPE"] == "elasticsearch":
