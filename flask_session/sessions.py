@@ -636,7 +636,7 @@ class SqlAlchemySessionInterface(SessionInterface):
 
             session_id = self.db.Column(self.db.String(255), unique=True)
             data = self.db.Column(self.db.LargeBinary)
-            expiry = self.db.Column(self.db.DateTime(timezone=True))
+            expiry = self.db.Column(self.db.DateTime)
 
             def __init__(self, session_id, data, expiry):
                 self.session_id = session_id
@@ -657,7 +657,7 @@ class SqlAlchemySessionInterface(SessionInterface):
 
     def _delete_expired_sessions(self):
         self.sql_session_model.query.filter(
-            self.sql_session_model.expiry.astimezone(pytz.UTC) < datetime.utcnow().replace(tzinfo=pytz.UTC)
+            self.sql_session_model.expiry < datetime.utcnow()
         ).delete()
         self.db.session.commit()
 
@@ -685,7 +685,7 @@ class SqlAlchemySessionInterface(SessionInterface):
             session_id=store_id
         ).first()
         if saved_session and (
-            not saved_session.expiry or saved_session.expiry.astimezone(pytz.UTC) <= datetime.utcnow().replace(tzinfo=pytz.UTC)
+            not saved_session.expiry or saved_session.expiry <= datetime.utcnow()
         ):
             # Delete expired session
             self.db.session.delete(saved_session)
